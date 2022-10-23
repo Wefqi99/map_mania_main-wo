@@ -1,28 +1,41 @@
 var gMap
 
+function initApp() {
+    console.log("Map Mainia Starting...")
+    start()
+}
+
+async function start()  {
+    try {
+        const response = await fetch('/send')
+        const data = await response.json()
+        mapPoints(data)
+    } catch {
+        console.log("There was an issue fetching the data")
+    }
+}
+
+function mapPoints(data) {
+    var jsonArray = Object.values(data.places)
+    for (let i = 0; i < jsonArray.length; i++) {
+        var name = jsonArray[i].name
+        var lattitude = jsonArray[i].lattitude
+        var longitude = jsonArray[i].longitude
+        var marker = new google.maps.Marker({position: {lat: lattitude, lng: longitude}, map:gMap, title: name});
+        marker.setIcon('https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png')
+    }
+}
+
 function initMap() {
 
     gMap = new google.maps.Map(document.getElementById('myMapID'), {
         center: {lat: 41.6303, lng: 87.8539}, zoom: 3});
 
-    //Adds marker for Silwad, Palestine
-    var marker = new google.maps.Marker({position: {lat:31.9794, lng: 35.2619 }, map:gMap})
-    marker.setIcon('https://developers.google.com/maps/documentation/javascript/examples/full/images/beachflag.png')
 
-    var markertwo = new google.maps.Marker({position: {lat:41.6303, lng:-87.8539 }, map:gMap})
-
-    
-
-    var infoWindow = new google.maps.InfoWindow({content: 'Silwad, Palestine: Where I was born'})
-    marker.addListener('click', function() {
-        infoWindow.open(gMap, marker)
-    })
 
     google.maps.event.addListener(gMap, 'idle', function() {
         updateGame()
     });
-
-
 }
 
 function updateGame() {
